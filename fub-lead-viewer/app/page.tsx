@@ -8,6 +8,7 @@ import {
   type Person,
 } from '@/services/fubClient';
 import ContactCard from '@/components/ContactCard';
+import Sidebar from '@/components/Sidebar';
 import {
   getSearchHistory,
   addToSearchHistory,
@@ -24,6 +25,7 @@ export default function Home() {
   const [connectionStatus, setConnectionStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [searchHistory, setSearchHistory] = useState<SearchHistoryItem[]>([]);
   const [showHistory, setShowHistory] = useState(true);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
   // Load search history on mount
   useEffect(() => {
@@ -89,8 +91,11 @@ export default function Home() {
   };
 
   const handleViewDetails = (person: Person) => {
-    // Placeholder for Phase A3 - will open sidebar
-    alert(`Phase A3 will open sidebar for ${person.name || person.id}`);
+    setSelectedPerson(person);
+  };
+
+  const handleCloseSidebar = () => {
+    setSelectedPerson(null);
   };
 
   const handleNewSearch = () => {
@@ -98,6 +103,7 @@ export default function Home() {
     setResults(null);
     setError(null);
     setShowHistory(true);
+    setSelectedPerson(null);
   };
 
   return (
@@ -109,7 +115,7 @@ export default function Home() {
             FUB Lead Viewer
           </h1>
           <p className="text-gray-600">
-            Phase A2: Enhanced manual contact lookup
+            Phase A3: Sidebar UI with tab navigation
           </p>
         </div>
 
@@ -311,6 +317,11 @@ export default function Home() {
           </ol>
         </div>
       </div>
+
+      {/* Sidebar - shown when a person is selected */}
+      {selectedPerson && (
+        <Sidebar person={selectedPerson} onClose={handleCloseSidebar} />
+      )}
     </div>
   );
 }
