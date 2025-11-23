@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { type Person } from '@/services/fubClient';
 import TabNavigation, { type TabId } from './TabNavigation';
 import LeadProfileCard from './LeadProfileCard';
@@ -13,13 +13,34 @@ interface SidebarProps {
 export default function Sidebar({ person, onClose }: SidebarProps) {
   const [activeTab, setActiveTab] = useState<TabId>('profile');
 
+  // Add Escape key handler for accessibility
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [onClose]);
+
   return (
-    <div className="fixed inset-0 bg-gray-900 bg-opacity-50 z-50 md:relative md:bg-transparent md:bg-opacity-100">
-      <div className="absolute right-0 top-0 h-full w-full md:w-96 bg-white shadow-2xl overflow-y-auto">
+    <div
+      className="fixed inset-0 bg-gray-900 bg-opacity-50 z-50 md:relative md:bg-transparent md:bg-opacity-100"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="sidebar-title"
+    >
+      <div
+        className="absolute right-0 top-0 h-full w-full md:w-96 bg-white shadow-2xl overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="sticky top-0 bg-white border-b border-gray-200 z-10">
           <div className="flex items-center justify-between p-4">
-            <h2 className="text-lg font-semibold text-gray-900">Lead Details</h2>
+            <h2 id="sidebar-title" className="text-lg font-semibold text-gray-900">Lead Details</h2>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-gray-600 transition-colors"

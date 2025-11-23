@@ -47,6 +47,15 @@ async function handleRequest(
 
     // Extract path from catch-all route
     const { path } = await params.params;
+
+    // Validate path segments to prevent path traversal attacks
+    if (path.some(segment => segment.includes('..') || segment.includes('//') || segment.length === 0)) {
+      return NextResponse.json(
+        { error: 'Invalid path parameters' },
+        { status: 400 }
+      );
+    }
+
     const fubPath = path.join('/');
 
     // Get query parameters from the request
@@ -69,15 +78,33 @@ async function handleRequest(
       headers,
     };
 
-    // Add body for POST/PUT requests
+    // Add body for POST/PUT requests with error handling
     if (method === 'POST' || method === 'PUT') {
-      const body = await request.json();
-      options.body = JSON.stringify(body);
+      try {
+        const body = await request.json();
+        options.body = JSON.stringify(body);
+      } catch (jsonError) {
+        return NextResponse.json(
+          { error: 'Invalid JSON in request body' },
+          { status: 400 }
+        );
+      }
     }
 
     // Make request to FUB API
     const response = await fetch(fubUrl, options);
-    const data = await response.json();
+
+    // Parse response with error handling
+    let data;
+    try {
+      data = await response.json();
+    } catch (parseError) {
+      console.error('Failed to parse FUB API response:', parseError);
+      return NextResponse.json(
+        { error: 'Invalid response from FUB API', status: response.status },
+        { status: 502 }
+      );
+    }
 
     // Return the response from FUB API
     return NextResponse.json(data, { status: response.status });
