@@ -61,7 +61,50 @@ export interface Person {
   phones?: Array<{ value: string; type?: string }>;
   stage?: string;
   created?: string;
-  [key: string]: any;
+  updated?: string;
+
+  // Address information
+  address?: string;
+  city?: string;
+  state?: string;
+  zip?: string;
+  country?: string;
+
+  // Additional contact details
+  company?: string;
+  jobTitle?: string;
+  website?: string;
+
+  // Source and tracking
+  source?: string;
+  sourceUrl?: string;
+  assignedTo?: string;
+  owner?: { id: number; name: string };
+
+  // Tags and categorization
+  tags?: string[];
+  labels?: string[];
+
+  // Social media
+  facebook?: string;
+  twitter?: string;
+  linkedin?: string;
+  instagram?: string;
+
+  // Notes and description
+  note?: string;
+  description?: string;
+
+  // Custom fields
+  customFields?: Record<string, unknown>;
+
+  // System fields
+  archived?: boolean;
+  lastContacted?: string;
+  nextFollowUp?: string;
+
+  // Catch-all for any additional fields
+  [key: string]: unknown;
 }
 
 export interface PeopleResponse {
